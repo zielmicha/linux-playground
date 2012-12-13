@@ -27,4 +27,4 @@ chroot _image apt-get clean || exit 1
 umount _image/proc
 umount _image/sys
 umount _image/dev/pts
-mksquashfs _image _image.sfs
+mksquashfs _image _image.sfs || exit 1
