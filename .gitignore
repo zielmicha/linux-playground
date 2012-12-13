@@ -1,0 +1,5 @@
+*~
+*.cpio.gz
+/systemgen/_systems
+/master/_image
+/master/_image.sfs

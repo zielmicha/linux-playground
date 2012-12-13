@@ -1,0 +1,5 @@
+debian-base:
+        debootstrap: testing
+debian-web-server:
+        extends: debian-base
+        apt-get: apache2 libapache2-mod-php5
