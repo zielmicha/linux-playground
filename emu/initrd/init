@@ -8,6 +8,14 @@ mount -t proc proc /proc
 mount -t devtmpfs none /dev
 mount -t sysfs sys /sys
 mount -t 9p -o trans=virtio storage /storage
+mkdir /tmp
+mount -t tmpfs tmpfs /tmp
+mkdir /img
+mkdir /newroot
+mount /storage/_image.sfs /img
+mount -t aufs -o br=/storage/master_cow:/img=ro,noxino none /newroot
+exec chroot /newroot /sbin/init
+
 /bin/busybox sh
 echo
 /bin/halt
