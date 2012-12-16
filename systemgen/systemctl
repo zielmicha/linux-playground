@@ -1,0 +1,27 @@
+#!/usr/bin/python
+import systemgen
+import sys
+import os
+
+PATH = os.path.join(os.path.dirname(__file__), '_systems')
+
+def main():
+    if os.getuid() != 0:
+        sys.exit('%s has to be run as root' % sys.argv[0])
+    app = systemgen.App(PATH)
+    if len(sys.argv) < 3:
+        sys.exit("usage: %s system cmd [args]" % sys.argv[0])
+    system_name = sys.argv[1]
+    app.setup()
+    system = app.systems[system_name]
+    action = sys.argv[2]
+    if action == 'up':
+        system.up()
+    elif action == 'down':
+        system.down()
+    elif action == 'chroot':
+        system.up()
+        os.execvp('chroot', ['chroot', system.mountpoint] + (sys.argv[3:] or ['bash']))
+
+if __name__ == '__main__':
+    main()
