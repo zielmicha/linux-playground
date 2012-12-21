@@ -1,0 +1,33 @@
+#!/bin/bash
+if [ ! -e /dev/sda ]; then
+    echo "/dev/sda doesn't exist"
+    exit 1
+fi
+if [ -e /dev/sda1 ]; then
+    echo "/dev/sda1 exists. Override current partitions? (y/n) "
+    read ok
+    if [ "$ok" != y ]; then
+        exit 1
+    fi
+fi
+
+echo "Clearing partition table..."
+(echo -e "o\nw" | fdisk /dev/sda > /dev/null) || exit 1
+
+echo 'Creating partitions...'
+parted -s /dev/sda -- mkpart primary EXT4 0% 100% || exit 1
+parted -s /dev/sda -- set 1 boot on || exit 1
+
+echo 'Reloading partition table...'
+hdparm -z /dev/sda || exit 1
+
+echo "Creating filesystem..."
+mkfs.ext4 /dev/sda1 || exit 1
+
+mount /dev/sda1 /mnt
+echo "Copying disk image..."
+cp -ax / /mnt
+
+echo "Configuring..."
+echo "T0:23:respawn:/sbin/getty -L ttyS0 19200 xterm" >> /etc/inittab
+echo ttyS0 >> /etc/securetty

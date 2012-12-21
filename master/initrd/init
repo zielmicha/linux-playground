@@ -1,0 +1,28 @@
+#!/bin/sh
+mkdir /proc
+mount -t proc proc /proc
+mkdir /sys
+mount -t sysfs sys /sys
+# busybox creates /dev?
+#mkdir /dev
+mount -t devtmpfs none /dev
+if [ -e /bin/_first_startup ]; then
+    mkdir /master_image
+    mount /dev/sr0 /master_image
+    mount -t tmpfs none /master_image/tmp
+    mount -o bind /dev /master_image/dev
+    mount -o bind /proc /master_image/proc
+    mount -o bind /sys /master_image/sys
+    cp /install_master /master_image/tmp/install_master
+    chroot /master_image /tmp/install_master
+    umount /master_image/mnt
+fi
+mkdir /disk
+echo -e "\b"
+echo -n "Running master system..."
+mount -t ext4 -o barrier=1,data=ordered /dev/sda1 /disk && \
+    cp /init_master /disk/init_master && \
+    cp /postinit_master /disk/postinit_master && \
+    exec chroot /disk /init_master
+sh
+/bin/halt

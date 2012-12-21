@@ -4,6 +4,10 @@
 /systemgen/_systems
 /master/_image
 /master/_image.sfs
+/master/initrd/bin
+/master/_master.img
 /emu/_res
 /emu/_tmp
+/_tmp
+/_config
 dconf

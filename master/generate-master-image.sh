@@ -14,7 +14,7 @@ if ! which mksquashfs; then
 fi
 
 MIRROR=http://ftp.task.gda.pl/debian
-APT_GET="aufs-tools squashfs-tools python2.7 less"
+APT_GET="aufs-tools squashfs-tools python2.7 less parted hdparm"
 
 debootstrap --include ssh --arch=i386 testing _image $MIRROR || exit 1
 
