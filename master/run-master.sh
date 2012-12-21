@@ -1,5 +1,5 @@
 ROOT=$(dirname $0)/..
-MASTER_SSH_PORT=5600
+. $ROOT/vars.inc
 
 if [ ! -e _image.sfs ]; then
     if [ $(whoami) = root ]; then
@@ -14,7 +14,7 @@ if [ ! -e _master.img ]; then
     echo "[first boot] Preparing master disk. This may take a while."
     qemu-img create -f qcow2 _master.img 500G
     mkdir -p initrd/bin
-    touch initrd/bin/_first_startup
+    touch $ROOT/_config/_first_startup
 fi
 echo 'Starting master...'
 $ROOT/emu/mkinitrd.sh initrd $ROOT/_tmp/master_initrd || exit 1

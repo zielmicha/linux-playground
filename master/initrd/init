@@ -6,7 +6,9 @@ mount -t sysfs sys /sys
 # busybox creates /dev?
 #mkdir /dev
 mount -t devtmpfs none /dev
-if [ -e /bin/_first_startup ]; then
+mkdir /storage
+mount -t 9p -o trans=virtio storage /storage
+if [ -e /storage/_first_startup ]; then
     mkdir /master_image
     mount /dev/sr0 /master_image
     mount -t tmpfs none /master_image/tmp
@@ -16,7 +18,9 @@ if [ -e /bin/_first_startup ]; then
     cp /install_master /master_image/tmp/install_master
     chroot /master_image /tmp/install_master
     umount /master_image/mnt
+    rm /storage/_first_startup
 fi
+umount /storage
 mkdir /disk
 echo -e "\b"
 echo -n "Running master system..."

@@ -29,5 +29,5 @@ echo "Copying disk image..."
 cp -ax / /mnt
 
 echo "Configuring..."
-echo "T0:23:respawn:/sbin/getty -L ttyS0 19200 xterm" >> /etc/inittab
-echo ttyS0 >> /etc/securetty
+echo "T0:23:respawn:/sbin/getty -L ttyS0 19200 xterm" >> /mnt/etc/inittab
+echo ttyS0 >> /mnt/etc/securetty
