@@ -1,0 +1,26 @@
+#!/bin/sh
+mkdir /proc
+mount -t proc proc /proc
+mkdir /sys
+mount -t sysfs sys /sys
+mount -t devtmpfs none /dev
+
+mkdir /image
+mount /dev/sr0 /image
+
+mount -t tmpfs none /image/root
+
+mount -t proc proc /image/proc
+mount -t sysfs sys /image/sys
+mount -t devtmpfs none /image/dev
+
+mkdir /image/root/.ssh
+cp /master_ssh_port /image/root/
+cp /id_node /image/root/.ssh
+cp /id_node.pub /image/root/.ssh
+(echo -n "[10.0.3.2]:$(cat /master_ssh_port) "; cat /master_key.pub | cut -d' ' -f1-2 ) > /image/root/.ssh/known_hosts
+cp /init_node /image/root/init_node
+
+chroot /image /root/init_node
+
+/bin/halt

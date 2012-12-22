@@ -1,0 +1,10 @@
+#!/bin/bash
+export HOME=/root
+export LOGNAME=root
+dhclient -v eth0
+
+algs=HostKeyAlgorithms=ssh-rsa
+ip tuntap add dev tun0 mode tun
+ssh -f -i ~/.ssh/id_node node@10.0.3.2 -p $(cat /root/master_ssh_port) -o $algs -w 0 sleep 10000h
+
+bash

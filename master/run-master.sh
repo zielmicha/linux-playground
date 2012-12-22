@@ -11,6 +11,7 @@ if [ ! -e $DATA/gen/image.sfs ]; then
         exit 1
     fi
 fi
+
 if [ ! -e $DATA/master.img ]; then
     echo "[first boot] Preparing master disk. This may take a while."
     qemu-img create -f qcow2 $DATA/master.img 500G

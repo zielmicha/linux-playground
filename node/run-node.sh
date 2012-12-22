@@ -11,11 +11,17 @@ echo "Starting node..."
 initrd_dir=$(maketmp)
 cp -a initrd $initrd_dir
 
-cp $DATA/shared/ssh_host_rsa_key.pub $initrd/master_key.pub
+cp $DATA/shared/ssh_host_rsa_key.pub $initrd_dir/master_key.pub
+cp $DATA/shared/id_node $initrd_dir/id_node
+cp $DATA/shared/id_node.pub $initrd_dir/id_node.pub
 echo $MASTER_SSH_PORT > $initrd_dir/master_ssh_port
 
 initrd=$(maketmp)
-$ROOT/emu/mkinitrd.sh initrd $initrd || exit 1
+$ROOT/emu/mkinitrd.sh $initrd_dir $initrd || exit 1
 
-$ROOT/emu/kvm.sh -initrd $initrd -cdrom _image.sfs \
-    -net user -net nic,net=10.0.3.0/24
+rm -r "$initrd_dir"
+
+$ROOT/emu/kvm.sh -initrd $initrd -cdrom $DATA/gen/image.sfs \
+    -net nic,model=virtio -net user,net=10.0.3.0/24
+
+rm $initrd

@@ -10,7 +10,7 @@ fi
 DATA=$(readlink -f $DATA)
 
 maketmp() {
-   echo $DATA/tmp_$RANDOM
+   echo $DATA/tmp/tmp_$RANDOM
 }
 
 mkdir -p $DATA/tmp
