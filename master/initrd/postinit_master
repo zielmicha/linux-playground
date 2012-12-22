@@ -3,4 +3,4 @@ if [ ! -e /storage/root-password ]; then
     dd if=/dev/urandom bs=10 count=1 2>/dev/null | xxd -p > /storage/root-password
 fi
 echo "root:$(cat /storage/root-password)" | chpasswd
-echo "Root password saved in _config/root-password."
+echo "Root password saved in shared/root-password."

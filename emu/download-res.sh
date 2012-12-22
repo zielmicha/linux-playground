@@ -1,4 +1,7 @@
-mkdir _res
-MIRROR=http://user.zielm.com/playground-mirror
-wget $MIRROR/busybox -O _res/busybox
-wget $MIRROR/bzImage -O _res/bzImage
+#!/bin/bash
+ROOT=$(dirname $0)/..
+. $ROOT/vars.inc
+
+mkdir -p $DATA/res
+wget $MIRROR/busybox -O $DATA/res/busybox
+wget $MIRROR/bzImage -O $DATA/res/bzImage
