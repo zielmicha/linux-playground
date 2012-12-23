@@ -2,5 +2,21 @@
 if [ ! -e /storage/root-password ]; then
     dd if=/dev/urandom bs=10 count=1 2>/dev/null | xxd -p > /storage/root-password
 fi
+
+if [ ! -e /etc/default/nfs-kernel-server ]; then
+    apt-get update || exit 1
+    apt-get -y install nfs-kernel-server || exit 1
+    echo "STATDOPTS=--port 2231" > /etc/default/nfs-common
+    echo "options lockd nlm_udpport=2232 nlm_tcpport=2232" >> /etc/modules
+    echo "RPCNFSDCOUNT=8 RPCMOUNTDOPTS='-p 2233'" > /etc/default/nfs-kernel-server
+    echo "portmap: ALL" > /etc/hosts.deny
+    mkdir -p /srv/storage /srv/images
+    cat > /etc/exports <<EOF
+/srv/images localhost(ro,no_subtree_check,no_root_squash,insecure)
+/srv/storage localhost(rw,no_subtree_check,no_root_squash,insecure)
+EOF
+    service nfs-kernel-server restart || exit 1
+fi
+
 echo "root:$(cat /storage/root-password)" | chpasswd
 echo "Root password saved in shared/root-password."

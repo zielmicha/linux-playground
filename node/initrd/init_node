@@ -1,10 +1,22 @@
 #!/bin/bash
 export HOME=/root
 export LOGNAME=root
+
 dhclient -v eth0
 
-algs=HostKeyAlgorithms=ssh-rsa
-ip tuntap add dev tun0 mode tun
-ssh -f -i ~/.ssh/id_node node@10.0.3.2 -p $(cat /root/master_ssh_port) -o $algs -w 0 sleep 10000h
+ifconfig lo up 127.0.0.1
+
+ssh -f -i ~/.ssh/id_node node@10.0.3.2 \
+    -o HostKeyAlgorithms=ssh-rsa \
+    -p $(cat /root/master_ssh_port) \
+    -L 61001:localhost:2049 -L 62001:localhost:2233 \
+    sleep 1000d
+
+mount -t tmpfs none /mnt
+mkdir -p /mnt/images
+mkdir -p /mnt/storage
+mount -o tcp,intr,ro,bg,port=61001,mountport=62001,noauto -t nfs localhost:/srv/images /mnt/images
+mount -o tcp,intr,rw,bg,port=61001,mountport=62001,noauto -t nfs localhost:/srv/storage /mnt/storage
 
 bash
+poweroff -f
