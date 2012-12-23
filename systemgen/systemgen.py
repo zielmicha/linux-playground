@@ -4,6 +4,7 @@ import random
 import yaml
 import shutil
 import subprocess
+import fcntl
 
 class JsonFile:
     def __init__(self, path):
@@ -152,11 +153,26 @@ def ismount(path):
             return True
     return False
 
+
+class FileLock(object):
+    ' exclusive by default '
+    def __init__(self, path, shared=False):
+        self.path = path
+        self.shared = shared
+        self.fd = open(self.path, 'w+')
+
+    def __enter__(self):
+        fcntl.lockf(self.fd, fcntl.LOCK_SH if self.shared else fcntl.LOCK_EX)
+
+    def __exit__(self, *args):
+        fcntl.lockf(self.fd, fcntl.LOCK_UN)
+
 class App:
     def __init__(self, path):
         self.path = path
-        self.config = yaml.load(open("systems.yaml"))
+        self.config = yaml.load(open(os.path.join(os.path.dirname(__file__), "systems.yaml")))
         self.systems = {}
+        self.lock = FileLock(os.path.join(path, '_lock'))
 
     def setup(self):
         for name in self.config.keys():
