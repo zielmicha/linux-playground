@@ -3,8 +3,10 @@ if [ ! -e /storage/root-password ]; then
     dd if=/dev/urandom bs=10 count=1 2>/dev/null | xxd -p > /storage/root-password
 fi
 
+apt-get update || exit 1
+apt-get install -y python-yaml debootstrap || exit 1
+
 if [ ! -e /etc/default/nfs-kernel-server ]; then
-    apt-get update || exit 1
     apt-get -y install nfs-kernel-server || exit 1
     echo "STATDOPTS=--port 2231" > /etc/default/nfs-common
     echo "options lockd nlm_udpport=2232 nlm_tcpport=2232" >> /etc/modules

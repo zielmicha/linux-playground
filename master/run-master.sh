@@ -19,7 +19,8 @@ if [ ! -e $DATA/master.img ]; then
 fi
 echo 'Starting master...'
 $ROOT/emu/mkinitrd.sh initrd $DATA/tmp/master_initrd || exit 1
-export PG_EXPORT_PATH=$DATA/shared
-mkdir -p $PG_EXPORT_PATH
+mkdir -p $DATA/shared
 $ROOT/emu/kvm.sh -initrd $DATA/tmp/master_initrd -cdrom $DATA/gen/image.sfs $DATA/master.img \
-    -net nic,model=virtio -net user,hostfwd=tcp:127.0.0.1:$MASTER_SSH_PORT-:22
+    -net nic,model=virtio -net user,hostfwd=tcp:127.0.0.1:$MASTER_SSH_PORT-:22 \
+    -fsdev local,id=exp1,path=$DATA/shared,security_model=mapped -device virtio-9p-pci,fsdev=exp1,mount_tag=storage \
+    -fsdev local,id=exp2,path=$ROOT,security_model=mapped,readonly -device virtio-9p-pci,fsdev=exp2,mount_tag=code

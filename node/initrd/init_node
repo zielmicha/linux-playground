@@ -10,13 +10,21 @@ ssh -f -i ~/.ssh/id_node node@10.0.3.2 \
     -o HostKeyAlgorithms=ssh-rsa \
     -p $(cat /root/master_ssh_port) \
     -L 61001:localhost:2049 -L 62001:localhost:2233 \
+    -L 63001:localhost:63001 \
     sleep 1000d
 
 mount -t tmpfs none /mnt
+mount -t tmpfs none /opt
+
 mkdir -p /mnt/images
 mkdir -p /mnt/storage
+mkdir -p /opt/playground
+
 mount -o tcp,intr,ro,bg,port=61001,mountport=62001,noauto -t nfs localhost:/srv/images /mnt/images
 mount -o tcp,intr,rw,bg,port=61001,mountport=62001,noauto -t nfs localhost:/srv/storage /mnt/storage
+mount -t 9p -o trans=virtio code /opt/playground
+
+python /opt/playground/node/client.py &
 
 bash
 poweroff -f

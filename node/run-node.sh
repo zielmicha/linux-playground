@@ -22,6 +22,7 @@ $ROOT/emu/mkinitrd.sh $initrd_dir $initrd || exit 1
 rm -r "$initrd_dir"
 
 $ROOT/emu/kvm.sh -initrd $initrd -cdrom $DATA/gen/image.sfs \
-    -net nic,model=virtio -net user,net=10.0.3.0/24
+    -net nic,model=virtio -net user,net=10.0.3.0/24 \
+    -fsdev local,id=exp2,path=$ROOT,security_model=mapped,readonly -device virtio-9p-pci,fsdev=exp2,mount_tag=code
 
 rm $initrd
